@@ -28,8 +28,10 @@ This project is a simple animation of bouncing balls on an HTML canvas. The ball
 
 ## Usage
 
-1. **Open** `index.html` in your web browser.
-2. **Left-click** on the canvas to add a new ball.
-3. **Right-click** on a ball to remove it.
-4. **Click** the "Pause" button to pause the animation.
-5. **Click** the "Resume" button to resume the animation.
+1. **Open** the project in Visual Studio Code (VS Code).
+2. **Compile** the TypeScript using the `tsc` command in Git Bash.
+3. **Open** `index.html` with Live Server.
+4. **Left-click** on the canvas to add a new ball.
+5. **Right-click** on a ball to remove it.
+6. **Click** the "Pause" button to pause the animation.
+7. **Click** the "Resume" button to resume the animation.
