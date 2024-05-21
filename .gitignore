@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# TypeScript compiled JavaScript files
+*.js
+*.js.map
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment variable files
+.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Optional npm cache directory
+.npm
+
+# Debugging files
+*.log
+
+
