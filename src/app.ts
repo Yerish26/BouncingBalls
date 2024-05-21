@@ -17,7 +17,6 @@ let isPaused = false;
 const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
 const audioContext = new AudioContextClass();
 let collisionBuffer: AudioBuffer;
-// let edgeCollisionBuffer: AudioBuffer;
 
 // Load audio files
 async function loadAudio(url: string): Promise<AudioBuffer> {
@@ -29,7 +28,6 @@ async function loadAudio(url: string): Promise<AudioBuffer> {
 // Preload audio
 Promise.all([
   loadAudio("resources/collision.mp3").then(buffer => collisionBuffer = buffer),
-  // loadAudio("resources/edge_collision.mp3").then(buffer => edgeCollisionBuffer = buffer)
 ]);
 
 // Play sound using AudioContext
@@ -85,13 +83,11 @@ class Ball {
 
     if (this.x + this.size >= width || this.x - this.size <= 0) {
       this.velX = -this.velX * dampening;
-      // playSound(edgeCollisionBuffer);
     }
 
     if (this.y + this.size >= height) {
       this.velY = -this.velY * dampening;
       this.y = height - this.size; // Prevent sinking below the bottom
-      // playSound(edgeCollisionBuffer);
     }
 
     this.x += this.velX * deltaTime;
