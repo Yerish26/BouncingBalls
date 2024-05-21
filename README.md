@@ -11,21 +11,18 @@ This project is a simple animation of bouncing balls on an HTML canvas. The ball
 - Pause and resume the animation using buttons.
 - Background color changes dynamically over time.
 
-## Demo
-
-![Bouncing Balls Demo](demo.gif)
-
 ## Getting Started
 
 ### Prerequisites
 
-- A modern web browser with JavaScript enabled.
+- A modern web browser with JavaScript enabled
+- Typescipt compiler
 
 ### Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/bouncing-balls.git
+   git clone git@github.com:Yerish26/BouncingBalls.git
    cd bouncing-balls
    ```
 
