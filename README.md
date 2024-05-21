@@ -27,3 +27,12 @@ This project is a simple animation of bouncing balls on an HTML canvas. The ball
    ```bash
    git clone https://github.com/yourusername/bouncing-balls.git
    cd bouncing-balls
+   ```
+
+## Usage
+
+1. **Open** `index.html` in your web browser.
+2. **Left-click** on the canvas to add a new ball.
+3. **Right-click** on a ball to remove it.
+4. **Click** the "Pause" button to pause the animation.
+5. **Click** the "Resume" button to resume the animation.
