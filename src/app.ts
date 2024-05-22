@@ -1,4 +1,6 @@
-// Setup canvas
+// main.ts
+import { Ball } from './Ball.js';
+
 const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 const width = (canvas.width = window.innerWidth);
@@ -16,21 +18,18 @@ const AudioContextClass = (window.AudioContext ||
 const audioContext = new AudioContextClass();
 let collisionBuffer: AudioBuffer;
 
-// Load audio files
 async function loadAudio(url: string): Promise<AudioBuffer> {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   return audioContext.decodeAudioData(arrayBuffer);
 }
 
-// Preload audio
 Promise.all([
   loadAudio("resources/collision.mp3").then(
     (buffer) => (collisionBuffer = buffer)
   ),
 ]);
 
-// Play sound using AudioContext
 const playSound = (buffer: AudioBuffer) => {
   const source = audioContext.createBufferSource();
   source.buffer = buffer;
@@ -38,78 +37,9 @@ const playSound = (buffer: AudioBuffer) => {
   source.start(0);
 };
 
-// Class Ball
-class Ball {
-  constructor(
-    public x: number,
-    public y: number,
-    public velX: number,
-    public velY: number,
-    public color: string,
-    public size: number
-  ) {}
-
-  // Draw method
-  draw() {
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
-    ctx.beginPath();
-    ctx.fillStyle = this.color;
-    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // Update method
-  update(deltaTime: number) {
-    this.velY += gravity * deltaTime;
-
-    if (this.x + this.size >= width || this.x - this.size <= 0) {
-      this.velX = -this.velX * dampening;
-    }
-
-    if (this.y + this.size >= height) {
-      this.velY = -this.velY * dampening;
-      this.y = height - this.size; // Prevent sinking below the bottom
-    }
-
-    this.x += this.velX * deltaTime;
-    this.y += this.velY * deltaTime;
-
-    // Stop ball if it's moving very slowly
-    if (Math.abs(this.velY) < 0.1 && this.y + this.size >= height) {
-      this.velY = 0;
-    }
-
-    this.collisionDetect();
-  }
-
-  // Collision detection
-  collisionDetect() {
-    balls.forEach((otherBall) => {
-      if (this !== otherBall) {
-        const dx = this.x - otherBall.x;
-        const dy = this.y - otherBall.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < this.size + otherBall.size) {
-          playSound(collisionBuffer);
-          [this.velX, otherBall.velX] = [otherBall.velX, this.velX];
-          [this.velY, otherBall.velY] = [otherBall.velY, this.velY];
-        }
-      }
-    });
-  }
-}
-
-// Random function
 const random = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min)) + min;
 
-// Spawn a new ball at click location
 canvas.addEventListener("click", (event) => {
   if (balls.length < maxBalls) {
     const size = random(10, 20);
@@ -119,13 +49,20 @@ canvas.addEventListener("click", (event) => {
       random(-7, 7),
       random(-7, 7),
       `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`,
-      size
+      size,
+      balls,
+      ctx,
+      width,
+      height,
+      gravity,
+      dampening,
+      playSound,
+      collisionBuffer
     );
     balls.push(ball);
   }
 });
 
-// Remove a ball on right-click
 canvas.addEventListener("contextmenu", (event) => {
   event.preventDefault();
   for (let i = balls.length - 1; i >= 0; i--) {
@@ -139,19 +76,17 @@ canvas.addEventListener("contextmenu", (event) => {
   }
 });
 
-// Game loop function with delta time and background animation
 let backgroundHue = 0;
 
 const tick = (currentTime: number) => {
   if (isPaused) {
-    lastTime = currentTime; // Update lastTime when paused
-    return; // Skip updating and drawing while paused
+    lastTime = currentTime;
+    return;
   }
 
-  const deltaTime = (currentTime - lastTime) / 16.666; // Normalize to 60fps
+  const deltaTime = (currentTime - lastTime) / 16.666;
   lastTime = currentTime;
 
-  // Animate background color
   backgroundHue = (backgroundHue + 0.5) % 360;
   ctx.fillStyle = `hsl(${backgroundHue}, 100%, 95%)`;
   ctx.fillRect(0, 0, width, height);
@@ -164,7 +99,6 @@ const tick = (currentTime: number) => {
   requestAnimationFrame(tick);
 };
 
-// Pause and Resume buttons
 document.getElementById("pause")?.addEventListener("click", () => {
   isPaused = true;
 });
@@ -172,7 +106,7 @@ document.getElementById("pause")?.addEventListener("click", () => {
 document.getElementById("resume")?.addEventListener("click", () => {
   if (isPaused) {
     isPaused = false;
-    lastTime = performance.now(); // Reset lastTime to current time
+    lastTime = performance.now();
     requestAnimationFrame(tick);
   }
 });
