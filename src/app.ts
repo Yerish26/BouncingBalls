@@ -1,11 +1,10 @@
-// main.ts
-import { Ball } from './Ball.js';
+import { Ball } from "./modules/Ball.js";
+import { initCanvas } from "./modules/canvasUtils.js";
+import { loadAudio, playSound } from "./modules/audioUtils.js";
+import { removeBall } from "./modules/eventHandlers.js";
+import { random } from "./utils.js";
 
-const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d")!;
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
-
+const { canvas, ctx, width, height } = initCanvas();
 const balls: Ball[] = [];
 const gravity = 0.2;
 const dampening = 0.7;
@@ -13,32 +12,11 @@ const maxBalls = 15;
 let lastTime = 0;
 let isPaused = false;
 
-const AudioContextClass = (window.AudioContext ||
-  (window as any).webkitAudioContext) as typeof AudioContext;
-const audioContext = new AudioContextClass();
 let collisionBuffer: AudioBuffer;
 
-async function loadAudio(url: string): Promise<AudioBuffer> {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  return audioContext.decodeAudioData(arrayBuffer);
-}
-
-Promise.all([
-  loadAudio("resources/collision.mp3").then(
-    (buffer) => (collisionBuffer = buffer)
-  ),
-]);
-
-const playSound = (buffer: AudioBuffer) => {
-  const source = audioContext.createBufferSource();
-  source.buffer = buffer;
-  source.connect(audioContext.destination);
-  source.start(0);
-};
-
-const random = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min)) + min;
+loadAudio("resources/collision.mp3").then((buffer) => {
+  collisionBuffer = buffer;
+});
 
 canvas.addEventListener("click", (event) => {
   if (balls.length < maxBalls) {
@@ -50,30 +28,23 @@ canvas.addEventListener("click", (event) => {
       random(-7, 7),
       `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`,
       size,
-      balls,
-      ctx,
-      width,
-      height,
-      gravity,
-      dampening,
-      playSound,
-      collisionBuffer
+      {
+        balls,
+        ctx,
+        width,
+        height,
+        gravity,
+        dampening,
+        playSound,
+        collisionBuffer,
+      }
     );
     balls.push(ball);
   }
 });
 
 canvas.addEventListener("contextmenu", (event) => {
-  event.preventDefault();
-  for (let i = balls.length - 1; i >= 0; i--) {
-    const ball = balls[i];
-    const dx = ball.x - event.clientX;
-    const dy = ball.y - event.clientY;
-    if (Math.sqrt(dx * dx + dy * dy) <= ball.size) {
-      balls.splice(i, 1);
-      break;
-    }
-  }
+  removeBall(event, balls);
 });
 
 let backgroundHue = 0;
