@@ -2,7 +2,7 @@ import { Ball } from "./modules/Ball.js";
 import { initCanvas } from "./modules/canvasUtils.js";
 import { loadAudio, playSound } from "./modules/audioUtils.js";
 import { removeBall } from "./modules/eventHandlers.js";
-import { random } from "./utils.js";
+import { random } from "./modules/utils.js";
 
 const { canvas, ctx, width, height } = initCanvas();
 const balls: Ball[] = [];
